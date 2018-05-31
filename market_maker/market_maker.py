@@ -35,7 +35,7 @@ class ExchangeInterface:
                                     orderIDPrefix=settings.ORDERID_PREFIX, postOnly=settings.POST_ONLY,
                                     timeout=settings.TIMEOUT,
                                     retries=settings.RETRIES,
-                                    retry_delay=setetings.RETRY_DELAY
+                                    retry_delay=settings.RETRY_DELAY
         )
 
     def cancel_order(self, order):
