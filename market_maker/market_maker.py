@@ -33,7 +33,10 @@ class ExchangeInterface:
         self.bitmex = bitmex.BitMEX(base_url=settings.BASE_URL, symbol=self.symbol,
                                     apiKey=settings.API_KEY, apiSecret=settings.API_SECRET,
                                     orderIDPrefix=settings.ORDERID_PREFIX, postOnly=settings.POST_ONLY,
-                                    timeout=settings.TIMEOUT)
+                                    timeout=settings.TIMEOUT,
+                                    retries=settings.RETRIES,
+                                    retry_delay=setetings.RETRY_DELAY
+        )
 
     def cancel_order(self, order):
         tickLog = self.get_instrument()['tickLog']

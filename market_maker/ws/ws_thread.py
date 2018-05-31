@@ -164,7 +164,7 @@ class BitMEXWebsocket():
         self.logger.info("Started thread")
 
         # Wait for connect before continuing
-        conn_timeout = 5
+        conn_timeout = settings.TIMEOUT
         while (not self.ws.sock or not self.ws.sock.connected) and conn_timeout and not self._error:
             sleep(1)
             conn_timeout -= 1
@@ -331,4 +331,3 @@ if __name__ == "__main__":
     ws.connect("https://testnet.bitmex.com/api/v1")
     while(ws.ws.sock.connected):
         sleep(1)
-
