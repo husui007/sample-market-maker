@@ -179,7 +179,7 @@ class BitMEX(object):
             order['symbol'] = self.symbol
             if self.postOnly:
                 order['execInst'] = 'ParticipateDoNotInitiate'
-        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='POST')
+        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='POST', max_retries=settings.RETRIES)
 
     @authentication_required
     def open_orders(self):
