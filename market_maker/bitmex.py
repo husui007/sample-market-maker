@@ -169,7 +169,7 @@ class BitMEX(object):
     def amend_bulk_orders(self, orders):
         """Amend multiple orders."""
         # Note rethrow; if this fails, we want to catch it and re-tick
-        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='PUT', rethrow_errors=True)
+        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='PUT', rethrow_errors=True, max_retries=self.max_retries)
 
     @authentication_required
     def create_bulk_orders(self, orders):
@@ -179,7 +179,7 @@ class BitMEX(object):
             order['symbol'] = self.symbol
             if self.postOnly:
                 order['execInst'] = 'ParticipateDoNotInitiate'
-        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='POST', max_retries=settings.RETRIES)
+        return self._curl_bitmex(path='order/bulk', postdict={'orders': orders}, verb='POST', max_retries=self.max_retries)
 
     @authentication_required
     def open_orders(self):
@@ -253,7 +253,7 @@ class BitMEX(object):
         def retry():
             self.retries += 1
             if self.retries > max_retries:
-                raise Exception("Max retries on %s (%s) hit, raising." % (path, json.dumps(postdict or '')))
+                raise Exception("Max retry amount of {} on {} ({}) hit, raising.".format(max_retries, path, json.dumps(postdict or '')))
             time.sleep(self.retry_delay)
             return self._curl_bitmex(path, query, postdict, timeout, verb, rethrow_errors, max_retries)
 
