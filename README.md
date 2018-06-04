@@ -184,3 +184,24 @@ This module supports Python 3.5 and later.
 
 BitMEX has a Python [REST client](https://github.com/BitMEX/api-connectors/tree/master/official-http/python-swaggerpy)
 and [websocket client.](https://github.com/BitMEX/api-connectors/tree/master/official-ws/python)
+
+# PRACTICAL SUGGESTIONS
+
+I have made and lost a lot of money on the testnet at Bitmex. In doing so, I have some advice. But first some words
+from [Principles by Ray Dalio](https://inside.bwater.com/publications/principles_excerpt).
+
+> "Pain + reflection =  Progress
+
+> 1.6 Understand nature’s practical lessons.
+> a. Maximize your evolution.
+> b. Remember “no pain, no gain.”
+> c. It is a fundamental law of nature that in order to gain
+> strength one has to push one’s limits, which is painful.
+
+> 1.7 Pain + Reflection = Progress.
+> a. Go to the pain rather than avoid it.
+> b. Embrace tough love.
+
+## CHECK_POSITION_LIMITS should be True by default
+
+You do not want to wake (as I have) and find that a 0.6BTC account has been drained because there was no limit on total amount of contracts you could have open.
