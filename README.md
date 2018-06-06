@@ -26,15 +26,31 @@ It is free to use and modify for your own strategies. It provides the following:
 ## Getting Started
 
 1. Create a [Testnet BitMEX Account](https://testnet.bitmex.com) and [deposit some TBTC](https://testnet.bitmex.com/app/deposit).
-2. Install: `pip install bitmex-market-maker`. It is strongly recommeded to use a virtualenv.
-3. Create a marketmaker project: run `marketmaker setup`
+
+### Non-developer instructions
+
+The below instructions are fine for a non-developer, but you will not be installing this fork of the Bitmex market-maker. They are fine for
+getting your feet wet:
+
+1. Install: `pip install bitmex-market-maker`. It is strongly recommeded to use a virtualenv.
+1. Create a marketmaker project: run `marketmaker setup`
     * This will create `settings.py` and `market_maker/` in the working directory.
     * Modify `settings.py` to tune parameters.
-4. Edit settings.py to add your [BitMEX API Key and Secret](https://testnet.bitmex.com/app/apiKeys) and change bot parameters.
+
+### Developer instructions
+
+If you wish to follow my changes and/or make changes, you will need to do the following.
+
+1. `git clone` my repo
+1. `cp ./market_maker/_settings_base.py settings.py`
+
+### Continuing, both non-developers and developers should:
+
+1. Edit settings.py to add your [BitMEX API Key and Secret](https://testnet.bitmex.com/app/apiKeys) and change bot parameters.
     * Note that user/password authentication is not supported.
     * Run with `DRY_RUN=True` to test cost and spread.
-5. Run it: `marketmaker [symbol]`
-6. Satisfied with your bot's performance? Create a [live API Key](https://www.bitmex.com/app/apiKeys) for your
+1. Run it: `marketmaker [symbol]`
+1. Satisfied with your bot's performance? Create a [live API Key](https://www.bitmex.com/app/apiKeys) for your
    BitMEX account, set the `BASE_URL` and start trading!
 
 ## Operation Overview
@@ -45,8 +61,11 @@ This market maker works on the following principles:
 * Based on parameters set by the user, the bot creates a descriptions of orders it would like to place.
   - If `settings.MAINTAIN_SPREADS` is set, the bot will start inside the current spread and work outwards.
   - Otherwise, spread is determined by interval calculations.
-* If the user specifies position limits, these are checked. If the current position is beyond a limit,
-  the bot stops quoting that side of the market.
+* If the user specifies position limits,(via `CHECK_POSITION_LIMITS, MIN_POSITION` and
+`MAX_POSITION` these are checked. If the current position is beyond a limit,
+  the bot stops quoting that side of the market. **IMPORTANT**: these parameters can save you
+  from buying/selling more contracts that your margin can sustain. If you dont use them, then
+  you may well margin yourself into a drained account.
 * These order descriptors are compared with what the bot has currently placed in the market.
   - If an existing order can be amended to the desired value, it is amended.
   - Otherwise, a new order is created.
@@ -175,7 +194,6 @@ Common errors we've seen:
 * `TypeError: __init__() got an unexpected keyword argument 'json'`
   * This is caused by an outdated version of `requests`. Run `pip install -U requests` to update.
 
-
 ## Compatibility
 
 This module supports Python 3.5 and later.
@@ -185,22 +203,59 @@ This module supports Python 3.5 and later.
 BitMEX has a Python [REST client](https://github.com/BitMEX/api-connectors/tree/master/official-http/python-swaggerpy)
 and [websocket client.](https://github.com/BitMEX/api-connectors/tree/master/official-ws/python)
 
-# PRACTICAL SUGGESTIONS
+### Related software
 
-I have made and lost a lot of money on the testnet at Bitmex. In doing so, I have some advice. But first some words
-from [Principles by Ray Dalio](https://inside.bwater.com/publications/principles_excerpt).
+* [Krypto](https://github.com/ctubio/Krypto-trading-bot)
+* [Tribeca](https://github.com/michaelgrosner/tribeca)
+* [Autoview](https://www.youtube.com/watch?v=1xXOc0y6wRg)
 
-> "Pain + reflection =  Progress
 
-> 1.6 Understand nature’s practical lessons.
-> a. Maximize your evolution.
-> b. Remember “no pain, no gain.”
-> c. It is a fundamental law of nature that in order to gain
-> strength one has to push one’s limits, which is painful.
+# THEORY and PRACTICE of Market-Making
 
-> 1.7 Pain + Reflection = Progress.
-> a. Go to the pain rather than avoid it.
-> b. Embrace tough love.
+I recommend [this article](https://rados.io/how-profitable-is-market-making-on-different-exchanges/) if you are not familiar with market-making and its pitfalls. Reading that will make my discussion eaiser to follow.
+
+## Daily range
+
+The most important idea for you to grasp *now* about market-making is that you are setting
+up a grid of buy and sell orders and you make money on the daily fluctuation of the market.
+
+As you can see from [this picture](http://take.ms/Q9kOY) having a grid of buy and sell orders
+allows you to profit from the daily fluctuations of bitcoin regardless of whether the price
+is going up or down.
+
+The caveat is: you need to need to be 100% certain that your buy/sell grid covers the range
+of fluctuation **AND** that you have enough capital in your account to make the buys/sells
+throughout an entire day of fluctuation. Check our TOTAL capital versus AVAILABLE credit
+after setting up your buy/sell grid and make sure that only 50% of your capital is expended
+in opening up these limit orders.
+
+An important concept is daily price range. You must know the daily price range of Bitcoin
+and be certain that your buy/sell grid covers it. For instance, [here you can see that I have
+a wide range of orders on the book](http://take.ms/nEm0N) and the daily range of Bitcoin is 4 times or more smaller than my grid.
+
+Reading an article like [this Bloomberg one](https://www.bloomberg.com/news/articles/2018-05-02/bitcoin-s-daily-trading-range-falls-from-4-700-to-124-chart) will help you understand
+what range your grid should be prepared to cover on a daily basis.
+
+For me, all I do is look at the UPside and DOWNside contracts at Bitmex to get an idea of
+the range that Bitcoin will trade in - this is because these future contracts are designed
+to not pay back and the prices of these contracts are calculated to make sure that Bitcoin
+does not rise or fall to those values within a week.
+
+For instance, at this moment, Bitcoin is trading at $7639.00 and the UP contract strike is
+$8250 and the DOWN contract strike is $6750. So as long as my grid covers that price range,
+I am good to go for a week.
+
+## Are you bullish on Bitcoin?
+
+If you are bullish on Bitcoin and don't want to get caught with sell orders when BTC
+skyrockets to the moon without notice, then you may want to only offer buy-side market-making
+instead of two-way market making.
+
+The way to do this is to enable `CHECK_POSITION_LIMITS` and then set `MIN_POSITION` to `-1`
+so that you never hold more than 1 short contract. Set the `MAX_POSITION` to a number that
+you feel comfortable with. e.g., if your initial buy contract is for 500 contracts and your
+orders are spaced 1% apart and you want to be able to buy all the way down to BTC dropping
+20% in value, then you need 20 * 500 as your `MAX_POSITION` and no more.
 
 ## CHECK_POSITION_LIMITS should be True by default
 
