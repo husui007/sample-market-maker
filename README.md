@@ -260,3 +260,9 @@ orders are spaced 1% apart and you want to be able to buy all the way down to BT
 ## CHECK_POSITION_LIMITS should be True by default
 
 You do not want to wake (as I have) and find that a 0.6BTC account has been drained because there was no limit on total amount of contracts you could have open.
+
+## Monitoring your position
+
+Keep an eye on your TOTAL balance, AVAILABLE balance and the Liquidation price for your contracts, as [this picture shows](http://take.ms/sdNZO) then use
+a chart to understand what the maximum trading range for your instrument (XBTUSD in most cases) is and make sure the difference between the current price and the liquidation price is
+at least twice that. [This diagram](http://take.ms/p6ZX7) shows a simple study of daily trading range to give me a sense of assurance.
