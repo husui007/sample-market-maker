@@ -1,0 +1,6 @@
+#!/bin/bash -x
+
+
+pkill -f runmm
+#mv nohup.out /tmp/nohup.out.$$
+./batch/runmm

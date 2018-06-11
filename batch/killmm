@@ -1,0 +1,5 @@
+#!/bin/bash -x
+
+mv nohup.out /tmp/nohup.out.$$
+pkill -f runmm
+pkill -f marketmaker
